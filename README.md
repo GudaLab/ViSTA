@@ -5,14 +5,14 @@ ViSTA (Variant-integrated Sequence Transformer Architecture) is a BERT-based DNA
 
 # Requirements and installations
 ## Dependencies
-transformers 4.46.3; 
-python 3.8.20; 
-pysam 0.22.1; 
-torch 1.13.1; 
-scikit-learn 1.2.2; 
-numpy 1.24.3; 
-pandas 2.0.3; 
-biopython>=1.79; 
+transformers 4.46.3  \ 
+python 3.8.20  \ 
+pysam 0.22.1  \ 
+torch 1.13.1  \ 
+scikit-learn 1.2.2  \ 
+numpy 1.24.3  \ 
+pandas 2.0.3 \ 
+biopython>=1.79  \ 
 
 ## Installtaion
 1.	Create a virtual environment
@@ -51,23 +51,18 @@ The pretrained ViSTA model is stored in the folder ./pt_ViSTA, and is used in th
 
 The following parameters can be adjusted as per the requirement in the code. 
 
-#---------------------------------------------------------------------------
+#---------------------------------------------------------------------------  \
 
 VCWin=4 # size of Variant centered window <br />
 SplitSeqLength=1000 # length of input sequence <br />
 export MAX_LENGTH=512 <br />
 export LR=1e-4 #learning rate <br />
-
-export BASE_DIR="/" # path of the base directory
-
-export DATA_PATH="${BASE_DIR}/input_data" # Input data for finetuning
-
-export OUTPUT_DIR="${BASE_DIR}/finetune/ft_ViSTA" # output directory for finetuned model
-
-export pretrained_ViSTA_MaxLen512="${BASE_DIR}/pretrained" # pretrained model
-
---model_name_or_path $pretrained_ViSTA_MaxLen512 \
---tokenizer_name $pretrained_dnabert2_MaxLen512 \
+export BASE_DIR="/" # path of the base directory <br />
+export DATA_PATH="${BASE_DIR}/input_data" # Input data for finetuning <br />
+export OUTPUT_DIR="${BASE_DIR}/finetune/ft_ViSTA" # output directory for finetuned model <br />
+export pretrained_ViSTA_MaxLen512="${BASE_DIR}/pretrained" # pretrained model <br />
+--model_name_or_path $pretrained_ViSTA_MaxLen512 \ <br />
+--tokenizer_name $pretrained_dnabert2_MaxLen512 \ <br />
 --data_path $DATA_PATH \
 --kmer -1 \
 --run_name DNABERT2_${LR}_seed${seed} \
@@ -80,22 +75,22 @@ export pretrained_ViSTA_MaxLen512="${BASE_DIR}/pretrained" # pretrained model
 --fp16 \ # Comment or remove to disable
 --save_steps 5 \
 --output_dir $OUTPUT_DIR \
---save_strategy epoch \ # Comment or remove to disable
---eval_strategy epoch \ # Comment or remove to disable
---logging_strategy epoch \ # Comment or remove to disable
---warmup_steps 100 \ # Comment or remove to disable
---overwrite_output_dir True \ # Comment or remove to disable
---log_level info \ # Comment or remove to disable
---lr_scheduler_type "linear" \ # Comment or remove to disable
---find_unused_parameters False \ # Comment or remove to disable
---use_lora \ # Comment or remove to disable
---load_best_model_at_end True \ # Comment or remove to disable
---metric_for_best_model eval_accuracy \ # Comment or remove to disable
---greater_is_better True # Comment or remove to disable
+--save_strategy epoch # Comment or remove to disable  \
+--eval_strategy epoch  # Comment or remove to disable  \
+--logging_strategy epoch  # Comment or remove to disable  \
+--warmup_steps 100  # Comment or remove to disable  \
+--overwrite_output_dir True  # Comment or remove to disable  \
+--log_level info  # Comment or remove to disable  \
+--lr_scheduler_type "linear"  # Comment or remove to disable  \
+--find_unused_parameters False  # Comment or remove to disable  \
+--use_lora \ # Comment or remove to disable  \
+--load_best_model_at_end True  # Comment or remove to disable  \
+--metric_for_best_model eval_accuracy  # Comment or remove to disable  \
+--greater_is_better True # Comment or remove to disable  \
 
-#---------------------------------------------------------------------------
+#---------------------------------------------------------------------------  \
 
-Output
+Output \
 The output from the fine-tuned model is saved in the ft_ViSTA folder by default, or in a user-specified directory. The following subfolder structure is used to organize the saved results.
 
 #---------------------------------------------------------------------------
