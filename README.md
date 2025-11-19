@@ -41,7 +41,7 @@ ViSTA can also be downloaded using the following command.
 The model has been tested in Python 3.8.20 environment. We recommend a GPU (NVIDIA CUDA-enabled) to accelerate model pretraining and fine-tuning.
 
 # Fine-tuning ViSTA
-Before starting finetuning, download the input data (folder input_data) and pretrained model (folder pt_ViSTA) from the https://doi.org/10.5281/zenodo.17654142. The finetuned model (ft_ViSTA) is also available to see the results.
+Before starting finetuning, download the input data (folder input_data) and pretrained model (folder pt_ViSTA) from the https://doi.org/10.5281/zenodo.17654142, and keep these in the main directory. The finetuned model (ft_ViSTA) is also available to see the results.
 
 ## Adjusting parameters and fine-tuning the model via the slurm code
 
