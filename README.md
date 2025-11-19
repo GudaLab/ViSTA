@@ -35,6 +35,7 @@ The file env_ViSTA.yml provides a complete list of all dependencies, packages, a
 
 ## Installation using git
 ViSTA can also be downloaded using the following command. 
+
 *git clone https://github.com/guda_lab/ViSTA.git*
 
 The model has been tested in Python 3.8.20 environment. We recommend a GPU (NVIDIA CUDA-enabled) to accelerate model pretraining and fine-tuning.
@@ -52,13 +53,17 @@ The following parameters can be adjusted as per the requirement in the code.
 
 #---------------------------------------------------------------------------
 
-VCWin=4 # size of Variant centered window
-SplitSeqLength=1000 # length of input sequence
-export MAX_LENGTH=512 
-export LR=1e-4 #learning rate
+VCWin=4 # size of Variant centered window <br />
+SplitSeqLength=1000 # length of input sequence <br />
+export MAX_LENGTH=512 <br />
+export LR=1e-4 #learning rate <br />
+
 export BASE_DIR="/" # path of the base directory
+
 export DATA_PATH="${BASE_DIR}/input_data" # Input data for finetuning
+
 export OUTPUT_DIR="${BASE_DIR}/finetune/ft_ViSTA" # output directory for finetuned model
+
 export pretrained_ViSTA_MaxLen512="${BASE_DIR}/pretrained" # pretrained model
 
 --model_name_or_path $pretrained_ViSTA_MaxLen512 \
