@@ -17,17 +17,17 @@ biopython>=1.79 <br />
 ## Installtaion
 1.	Create a virtual environment
    
-    conda create -n env_ViSTA python
+   *conda create -n env_ViSTA python*
 
-    conda activate env_ViSTA 
+   *conda activate env_ViSTA* 
 
 3.	Install python modules in the following way
    
-    conda install -c bioconda biopython numpy pandas tqdm scipy scikit-learn
+   *conda install -c bioconda biopython numpy pandas tqdm scipy scikit-learn*
 
 To support NVIDIA GPU environment, install the following packages-
 
-    conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
+   *conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia*
 
 To install the transformer library (from Hugging Face), use *pip install transformers*
 
@@ -36,7 +36,7 @@ The file env_ViSTA.yml provides a complete list of all dependencies, packages, a
 ## Installation using git
 ViSTA can also be downloaded using the following command. 
 
-    *git clone https://github.com/guda_lab/ViSTA.git*
+   *git clone https://github.com/guda_lab/ViSTA.git*
 
 The model has been tested in Python 3.8.20 environment. We recommend a GPU (NVIDIA CUDA-enabled) to accelerate model pretraining and fine-tuning.
 
@@ -45,7 +45,7 @@ The model has been tested in Python 3.8.20 environment. We recommend a GPU (NVID
 
 Run the slurm file ft_ViSTA_level1.slurm using the following command
 
-    *sbatch ft_ViSTA_level1.slurm*
+   *sbatch ft_ViSTA_level1.slurm*
 
 The pretrained ViSTA model is stored in the folder ./pt_ViSTA, and is used in the fine-tuning as mentioned in the code below.
 
@@ -109,7 +109,7 @@ ft_ViSTA
 # Get embedding dimensions
 For any given input sequence, extract embedding dimensions in the following way for downstream analysis. 
 
-    *python get_emb.py "AGTGCTGACGAT" 12 512 my_embedding_output.csv*
+   *python get_emb.py "AGTGCTGACGAT" 12 512 my_embedding_output.csv*
 
 * sequence ("AGTGCTGACGAT"):  Input DNA sequence
 * layer_number (1 to 12): Transformer layer to extract [CLS] embedding from
