@@ -16,12 +16,17 @@ biopython>=1.79;
 
 ## Installtaion
 1.	Create a virtual environment
+   
 *conda create -n env_ViSTA python*
+
 *conda activate env_ViSTA* 
-2.	Install python modules in the following way
+
+3.	Install python modules in the following way
+   
 *conda install -c bioconda biopython numpy pandas tqdm scipy scikit-learn*
 
 To support NVIDIA GPU environment, install the following packages-
+
 *conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia*
 
 To install the transformer library (from Hugging Face), use *pip install transformers*
