@@ -424,13 +424,10 @@ def train():
   
     # Reload data after state reset
     train_df = pd.read_csv(os.path.join(data_args.data_path, "train.csv"))
-    
     dev_df = pd.read_csv(os.path.join(data_args.data_path, "dev.csv"))
     test_df =pd.read_csv(os.path.join(data_args.data_path, "test.csv"))
     
     # Combine them into a single DataFrame
-    #combined_df = pd.concat([train_df, dev_df, test_df], ignore_index=True)
-
     combined_df = pd.concat([train_df, dev_df, test_df], ignore_index=True)
         
     # Optionally filter out sequences shorter than 1000
@@ -439,25 +436,15 @@ def train():
         combined_df = combined_df[combined_df['sequence'].str.len() >= MIN_SEQ_LENGTH]
     
     # Non-overlapping data, Stratified split into train, val, test
-    #train_df, temp_df = train_test_split(combined_df, test_size=0.2, stratify=combined_df['label'], random_state=42)
-    #val_df, test_df = train_test_split(temp_df, test_size=0.5, stratify=temp_df['label'], random_state=42)
+    train_df, temp_df = train_test_split(combined_df, test_size=0.2, stratify=combined_df['label'], random_state=42)
+    val_df, test_df = train_test_split(temp_df, test_size=0.5, stratify=temp_df['label'], random_state=42)
     
     
     #3 Overlapping dataset
-    train_df = combined_df.copy()
-    
-
-    
-    
-    train_df_for_val, val_df = train_test_split(
-        train_df, test_size=0.10, stratify=train_df['label'], random_state=42
-    )
-    # From train_df again, split out 10% as test
-    #train_df_for_test, test_df = train_test_split(
-    #    train_df, test_size=0.10, stratify=train_df['label'], random_state=24
+    #train_df = combined_df.copy()
+    #train_df_for_val, val_df = train_test_split(
+    #    train_df, test_size=0.10, stratify=train_df['label'], random_state=42
     #)
-    
-    #print (set(train_df['sequence']) & set(test_df['sequence']))
     
     # Count class distributions
     print ("\nCount class before balancing ---")
