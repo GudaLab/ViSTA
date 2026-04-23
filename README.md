@@ -1,119 +1,285 @@
-# ViSTA
-ViSTA (Variant-integrated Sequence Transformer Architecture) is a BERT-based DNA language model for cancer subtype prediction using patient-specific exome variants. By learning from variant-centered input sequences, ViSTA captures contextual interactions among somatic mutations to identify subtype-discriminative patterns, mutation hotspots, and oncogene signatures. It offers an interpretable, sequence-level framework for mutation-aware precision oncology.
+# ViSTA: End-to-End Usage Guide
 
-<img src="ViSTA.png" width="600"/>
+**Repository:** https://github.com/GudaLab/ViSTA
 
-# Requirements and installations
-## Dependencies
-transformers 4.46.3 <br />
-python 3.8.20 <br /> 
-pysam 0.22.1 <br />
-torch 1.13.1 <br />
-scikit-learn 1.2.2 <br />
-numpy 1.24.3 <br />
-pandas 2.0.3 <br />
-biopython>=1.79 <br />
+ViSTA (**V**ariant-integrated **S**equence **T**ransformer **A**rchitecture) is a BERT-based DNA language model for cancer subtype prediction using patient-specific exome variants. By learning from variant-centered input sequences, ViSTA captures contextual interactions among somatic mutations to identify subtype-discriminative patterns, mutation hotspots, and oncogene signatures. It provides an interpretable, sequence-level framework for mutation-aware precision oncology.
 
-## Installtaion
-1. Create a virtual environment
-   
-   *conda create -n env_ViSTA python*
+<p align="center">
+  <img src="ViSTA_1.png" width="600"/>
+</p>
 
-   *conda activate env_ViSTA* 
+This guide provides a clear, end-to-end workflow for users who want to install ViSTA, obtain the required data/model assets, run fine-tuning, and extract embeddings for downstream analysis.
 
-2. Install python modules in the following way
-   
-   *conda install -c bioconda biopython numpy pandas tqdm scipy scikit-learn*
+---
 
-3. To support NVIDIA GPU environment, install the following packages-
+## 1. Repository contents
 
-   *conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia*
+The main files in this repository are:
 
-To install the transformer library (from Hugging Face), use *pip install transformers*
+- **README.md** — repository overview, requirements, installation, fine-tuning instructions, and embedding extraction example  
+- **env_ViSTA.yml** — environment specification for the ViSTA software stack  
+- **ft_ViSTA_Level1.slurm** — example SLURM workflow for fine-tuning  
+- **ViSTA.py** — main training and fine-tuning entry point  
+- **get_emb.py** — utility for extracting layer-specific embedding vectors from an input sequence  
 
-The file env_ViSTA.yml provides a complete list of all dependencies, packages, and their versions required to run the ViSTA environment.
+---
 
-## Installation using git
-ViSTA can also be downloaded using the following command. 
+## 2. Requirements before running ViSTA
 
-   *git clone https://github.com/guda_lab/ViSTA.git*
+Before running ViSTA, make sure you have the following:
 
-The model has been tested in Python 3.8.20 environment. We recommend a GPU (NVIDIA CUDA-enabled) to accelerate model pretraining and fine-tuning.
+- A Linux environment with Conda
+- Preferably, access to an NVIDIA GPU node for efficient training and inference
+- Python 3.8.x
+- The ViSTA repository cloned locally
+- External assets downloaded from Zenodo:
+  - `input_data`
+  - `pt_ViSTA`
+- Sufficient storage for sequence data, checkpoints, logs, and exported embeddings
 
-# Fine-tuning ViSTA
-Before starting finetuning, download the input data (folder input_data) and pretrained model (folder pt_ViSTA) from the https://doi.org/10.5281/zenodo.17654142, and keep these in the main directory. The finetuned model (ft_ViSTA) is also available to see the results.
+The repository README reports testing with:
 
-## Adjusting parameters and fine-tuning the model via the slurm code
+- `transformers 4.46.3`
+- `python 3.8.20`
+- `pysam 0.22.1`
+- `torch 1.13.1`
+- `scikit-learn 1.2.2`
+- `numpy 1.24.3`
+- `pandas 2.0.3`
+- `biopython >= 1.79`
 
-Run the slurm file ft_ViSTA_level1.slurm using the following command
+---
 
-   *sbatch ft_ViSTA_level1.slurm*
+## 3. Installation workflow
 
-The pretrained ViSTA model is stored in the folder ./pt_ViSTA, and is used in the fine-tuning as mentioned in the code below.
+### Step 3.1 Clone the repository
 
-The following parameters can be adjusted as per the requirement in the code. 
+```bash
+git clone https://github.com/GudaLab/ViSTA.git
+cd ViSTA
+```
 
-#--------------------------------------------------------------------------- 
+### Step 3.2 Create and activate the environment
 
-VCWin=4 # size of Variant centered window <br />
-SplitSeqLength=1000 # length of input sequence <br />
-export MAX_LENGTH=512 <br />
-export LR=1e-4 #learning rate <br />
-export BASE_DIR="/" # path of the base directory <br />
-export DATA_PATH="${BASE_DIR}/input_data" # Input data for finetuning <br />
-export OUTPUT_DIR="${BASE_DIR}/finetune/ft_ViSTA" # output directory for finetuned model <br />
-export pretrained_ViSTA_MaxLen512="${BASE_DIR}/pretrained" # pretrained model <br />
---model_name_or_path $pretrained_ViSTA_MaxLen512 \
---tokenizer_name $pretrained_dnabert2_MaxLen512 \
---data_path $DATA_PATH \
---kmer -1 \
---run_name DNABERT2_${LR}_seed${seed} \
---model_max_length ${MAX_LENGTH} \
---per_device_train_batch_size 16 \
---per_device_eval_batch_size 8 \
---gradient_accumulation_steps 4 \
---learning_rate ${LR} \
---num_train_epochs 2000 \
---fp16 \ # Comment or remove to disable
---save_steps 5 \
---output_dir $OUTPUT_DIR \
---save_strategy epoch # Comment or remove to disable  \
---eval_strategy epoch  # Comment or remove to disable  \
---logging_strategy epoch  # Comment or remove to disable  \
---warmup_steps 100  # Comment or remove to disable  \
---overwrite_output_dir True  # Comment or remove to disable  \
---log_level info  # Comment or remove to disable  \
---lr_scheduler_type "linear"  # Comment or remove to disable  \
---find_unused_parameters False  # Comment or remove to disable  \
---use_lora \ # Comment or remove to disable  \
---load_best_model_at_end True  # Comment or remove to disable  \
---metric_for_best_model eval_accuracy  # Comment or remove to disable  \
---greater_is_better True # Comment or remove to disable  \
+```bash
+conda create -n env_ViSTA python
+conda activate env_ViSTA
+```
 
-#---------------------------------------------------------------------------  \
+### Step 3.3 Install packages
 
-Output \
-The output from the fine-tuned model is saved in the ft_ViSTA folder by default, or in a user-specified directory. The following subfolder structure is used to organize the saved results.
+```bash
+conda install -c bioconda biopython numpy pandas tqdm scipy scikit-learn
+conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
+pip install transformers
+```
 
-#---------------------------------------------------------------------------
+### Optional: use the provided environment file
 
-ft_ViSTA 
--	best_model  # saved best finetuned model
--	 checkpoint-1 # Intermediate models saved
--	 checkpoint-2
--	 checkpoint-n
--	 results  # evaluation metrics of training, predictions
--	 test_data_used.csv  # test data used for final testing
--	 test_results # evaluation metrics for test data
+If you want to create the environment directly from the repository specification:
 
-#---------------------------------------------------------------------------
+```bash
+conda env create -f env_ViSTA.yml
+conda activate env_ViSTA
+```
 
-# Get embedding dimensions
-For any given input sequence, extract embedding dimensions in the following way for downstream analysis. 
+---
 
-   *python get_emb.py "AGTGCTGACGAT" 12 512 my_embedding_output.csv*
+## 4. Required external assets and recommended folder layout
 
-* sequence ("AGTGCTGACGAT"):  Input DNA sequence
-* layer_number (1 to 12): Transformer layer to extract [CLS] embedding from
-* max_length (512 or less): Max sequence length (for tokenizer padding/truncation)
-* output my_embedding_output.csv: Output file to save the 768 embedding dimensions.
+Before fine-tuning, download `input_data` and `pt_ViSTA` from Zenodo and place them in the main repository directory.
+
+**Zenodo:** https://doi.org/10.5281/zenodo.17654142
+
+A practical working layout is:
+
+```text
+ViSTA/
+├── README.md
+├── ViSTA.py
+├── env_ViSTA.yml
+├── ft_ViSTA_Level1.slurm
+├── get_emb.py
+├── input_data/
+├── pt_ViSTA/
+└── finetune/
+    └── ft_ViSTA/
+```
+
+Where:
+
+- `input_data/` contains the prepared input dataset required for fine-tuning
+- `pt_ViSTA/` contains the pretrained ViSTA model used as the initialization point
+- `finetune/ft_ViSTA/` is a suitable location for storing fine-tuning outputs
+
+---
+
+## 5. End-to-end fine-tuning procedure
+
+### Step 5.1 Review and edit the SLURM configuration
+
+The repository provides `ft_ViSTA_Level1.slurm` as the main example workflow for fine-tuning. Before submitting the job, review and edit the configuration according to your system and data layout.
+
+Common adjustable parameters include:
+
+- `VCWin = 4` — variant-centered window size  
+- `SplitSeqLength = 1000` — input sequence length  
+- `MAX_LENGTH = 512` — tokenizer/model maximum length  
+- `LR = 1e-4` — learning rate  
+- `BASE_DIR` — base project directory  
+- `DATA_PATH` — input data location  
+- `OUTPUT_DIR` — fine-tuning output directory  
+- `pretrained_ViSTA_MaxLen512` — pretrained model directory  
+
+Example environment-style setup:
+
+```bash
+export BASE_DIR="/path/to/ViSTA"
+export DATA_PATH="${BASE_DIR}/input_data"
+export OUTPUT_DIR="${BASE_DIR}/finetune/ft_ViSTA"
+export pretrained_ViSTA_MaxLen512="${BASE_DIR}/pretrained"
+export MAX_LENGTH=512
+export LR=1e-4
+```
+
+Depending on your cluster, you may also need to adjust:
+
+- number of GPUs
+- memory allocation
+- CPU allocation
+- Conda environment activation
+- CUDA device visibility
+- checkpoint/output paths
+
+### Step 5.2 Submit the fine-tuning job
+
+After confirming the SLURM configuration, submit the job:
+
+```bash
+sbatch ft_ViSTA_Level1.slurm
+```
+
+The pretrained ViSTA model is read from `./pt_ViSTA` and used to initialize fine-tuning.
+
+The fine-tuning workflow may include options such as:
+
+- batch size and gradient accumulation
+- mixed precision (`fp16`)
+- save/evaluation/logging strategy
+- scheduler type
+- optional LoRA-based adaptation
+- best-model selection based on validation accuracy
+
+### Step 5.3 Monitor the output structure
+
+A typical fine-tuning output directory may look like:
+
+```text
+ft_ViSTA/
+├── best_model/
+├── checkpoint-1/
+├── checkpoint-2/
+├── checkpoint-n/
+├── results/
+├── test_data_used.csv
+└── test_results/
+```
+
+Meaning of these outputs:
+
+- **best_model/** — selected fine-tuned model checkpoint  
+- **checkpoint-*/** — intermediate model snapshots saved during training  
+- **results/** — training and validation outputs  
+- **test_results/** — test-set predictions and metrics  
+- **test_data_used.csv** — the test subset used in the run  
+
+For downstream analyses and reporting, the most important outputs are typically:
+
+- `best_model/`
+- `results/`
+- `test_results/`
+
+---
+
+## 6. Embedding extraction workflow
+
+The repository includes `get_emb.py` for extracting layer-specific `[CLS]` embeddings from an input sequence.
+
+Example usage:
+
+```bash
+python get_emb.py "AGTGCTGACGAT" 12 512 my_embedding_output.csv
+```
+
+### Argument meaning
+
+- **Sequence** — the input DNA sequence  
+- **Layer number** — transformer layer index (1 to 12) from which the `[CLS]` embedding is extracted  
+- **Max length** — tokenizer padding/truncation limit  
+- **Output CSV** — destination file for the exported embedding vector  
+
+In the example above:
+
+- `"AGTGCTGACGAT"` is the DNA sequence
+- `12` indicates the 12th transformer layer
+- `512` is the maximum sequence length
+- `my_embedding_output.csv` is the output file containing the embedding
+
+This script is useful for downstream analyses such as:
+
+- feature exploration
+- patient representation analysis
+- visualization
+- clustering
+- external classifier benchmarking
+
+---
+
+## 7. Suggested quick-start workflow
+
+The following shell script provides a concise demonstration workflow that users can adapt directly:
+
+```bash
+#!/bin/bash
+set -e
+
+git clone https://github.com/GudaLab/ViSTA.git
+cd ViSTA
+
+conda env create -f env_ViSTA.yml || true
+conda activate env_ViSTA
+
+# Place external assets here before continuing:
+#   ./input_data
+#   ./pt_ViSTA
+
+# Review/edit ft_ViSTA_Level1.slurm as needed, then submit
+sbatch ft_ViSTA_Level1.slurm
+
+# Example post-training embedding extraction
+python get_emb.py "AGTGCTGACGAT" 12 512 my_embedding_output.csv
+```
+
+This example is intended only as a starting point. Users should adapt paths, resource requests, and filenames according to their local environment and cluster policies.
+
+---
+
+## 8. Practical notes
+
+For smooth execution, keep the following points in mind:
+
+- Verify that `input_data` and `pt_ViSTA` are placed in the expected locations before submitting jobs
+- Check SLURM resource requests against your local cluster policy before running the example script
+- Confirm that the correct Conda environment is activated
+- Review file paths inside `ft_ViSTA_Level1.slurm` before launching
+- Use `best_model/` and `test_results/` as the primary outputs for downstream analysis and reporting
+- Use `get_emb.py` only after confirming that the correct environment and model assets are available
+
+If you are working on a shared cluster, it is also good practice to:
+
+- test configuration on a small run first
+- monitor logs during training
+- verify that checkpoints are being written correctly
+- confirm available disk space before long runs
+
+---
