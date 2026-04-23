@@ -5,7 +5,7 @@
 ViSTA (**V**ariant-integrated **S**equence **T**ransformer **A**rchitecture) is a BERT-based DNA language model for cancer subtype prediction using patient-specific exome variants. By learning from variant-centered input sequences, ViSTA captures contextual interactions among somatic mutations to identify subtype-discriminative patterns, mutation hotspots, and oncogene signatures. It provides an interpretable, sequence-level framework for mutation-aware precision oncology.
 
 <p align="center">
-  <img src="ViSTA_1.png" width="600"/>
+  <img src="ViSTA_1.png" width="1000"/>
 </p>
 
 This guide provides a clear, end-to-end workflow for users who want to install ViSTA, obtain the required data/model assets, run fine-tuning, and extract embeddings for downstream analysis.
