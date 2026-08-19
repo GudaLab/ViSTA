@@ -440,12 +440,6 @@ def train():
     val_df, test_df = train_test_split(temp_df, test_size=0.5, stratify=temp_df['label'], random_state=42)
     
     
-    #3 Overlapping dataset
-    #train_df = combined_df.copy()
-    #train_df_for_val, val_df = train_test_split(
-    #    train_df, test_size=0.10, stratify=train_df['label'], random_state=42
-    #)
-    
     # Count class distributions
     print ("\nCount class before balancing ---")
     train_counts = Counter(train_df['label'])
